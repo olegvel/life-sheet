@@ -3,10 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Movies</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .add-form-popup {
+            margin: 10px;
+            display: none;
+            max-width: 500px;
+            border: 3px solid #f1f1f1;
+        }
+        .add-form-container {
+            padding: 10px;
+        }
+
+        .add-form-container input {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
+<div>
+    <button class="add-button" onclick="openForm()">Add</button>
+    <div class="add-form-popup" id="add-form">
+        <form action="http://localhost:3000/api/movies/" method="post" class="add-form-container">
+            <h2>Add Movie</h2>
+
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" required>
+            <label for="year">Year</label>
+            <input type="number" min="1900" max="2099" value="1900" name="year" id="year">
+
+            <button type="submit" class="send-button">Add</button>
+            <button type="button" class="cancel-button" onclick="closeForm()">Cancel</button>
+        </form>
+    </div>
+</div>
+<br>
 <a href="/">
-  <button class="btn">Back</button>
+    <button class="back-button">Back</button>
 </a>
+
+<script>
+    function openForm() {
+        document.getElementById("add-form").style.display="block"
+    }
+    function closeForm() {
+        document.getElementById("add-form").style.display="none"
+    }
+</script>
+
 </body>
 </html>
