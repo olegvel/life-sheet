@@ -2,34 +2,42 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi/v5"
 	"github.com/olegvel/life-sheet/pkg/models"
 	"io"
 	"log"
 	"net/http"
 )
 
-func NewServer(port string) *http.Server {
-	mux := http.NewServeMux()
+func NewAPIServer() http.Handler {
+	r := chi.NewRouter()
 	h := &handler{}
 
-	fs := http.FileServer(http.Dir("./web"))
-	mux.Handle("/", fs)
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hi"))
+	})
 
-	// TODO add group for api
-	mux.HandleFunc("/api/create", h.CreateHandler)
+	// RESTy routes for "media" resource
+	r.Route("/media", func(r chi.Router) {
+		r.Get("/", h.ListMedia)    // GET /media
+		r.Post("/", h.CreateMedia) // POST /media
 
-	return &http.Server{
-		Addr:    port,
-		Handler: mux,
-	}
+		// sub-routers:
+		r.Route("/{mediaID}", func(r chi.Router) {
+			r.Get("/", h.GetMedia)       // GET /media/123
+			r.Put("/", h.UpdateMedia)    // PUT /media/123
+			r.Delete("/", h.DeleteMedia) // DELETE /media/123
+		})
+	})
 
+	return r
 }
 
 type handler struct {
 	//TODO add usecase
 }
 
-func (h *handler) CreateHandler(w http.ResponseWriter, r *http.Request) {
+func (h *handler) CreateMedia(w http.ResponseWriter, r *http.Request) {
 	//ctx := r.Context()
 
 	rawBody, err := io.ReadAll(r.Body)
@@ -55,3 +63,11 @@ func (h *handler) CreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 }
+
+func (h *handler) ListMedia(w http.ResponseWriter, r *http.Request) {}
+
+func (h *handler) GetMedia(w http.ResponseWriter, r *http.Request) {}
+
+func (h *handler) UpdateMedia(w http.ResponseWriter, r *http.Request) {}
+
+func (h *handler) DeleteMedia(w http.ResponseWriter, r *http.Request) {}
