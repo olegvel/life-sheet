@@ -1,0 +1,502 @@
+openapi: 3.0.3
+info:
+  title: Life Sheet
+  description: Structure and save the progress of your life
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:12965/api'
+tags:
+  - name: User
+    description: User operations
+  - name: Media
+    description: Media operations
+  - name: Movies
+    description: Movies operations
+  - name: TV Shows
+    description: TV Shows operations
+  - name: Animation
+    description: Animation operations
+  - name: Anime
+    description: Anime operations
+  - name: Music
+    description: Music operations
+  - name: Books
+    description: Books operations
+  - name: Health
+    description: Health operations
+
+paths:
+  /me:
+    get:
+      tags:
+        - User
+      description: 'Get information about current user'
+      responses:
+        200:
+          description: 'User Info'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /media/movies:
+    get:
+      tags:
+        - Movies
+      description: 'Get a list of movies'
+      responses:
+        200:
+          description: 'Movie list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      tags:
+        - Movies
+      description: 'Add new movie'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMovie'
+      responses:
+        200:
+          description: 'Movie added'
+
+  /media/movies/{id}:
+    get:
+      tags:
+        - Movies
+      description: 'Gets information about a movie'
+      responses:
+        200:
+          description: 'Movie details'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+    delete:
+      tags:
+        - Movies
+      description: 'Deletes information about a movie'
+      responses:
+        200:
+          description: 'Movie deleted'
+    parameters:
+      - name: id
+        in: path
+        description: 'Movie ID'
+        required: true
+        schema:
+          type: string
+
+  /media/shows:
+    get:
+      tags:
+        - TV Shows
+      description: 'Get a list of TV shows'
+      responses:
+        200:
+          description: 'TV shows list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      tags:
+        - TV Shows
+      description: 'Add new TV show'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewShow'
+      responses:
+        200:
+          description: 'TV show added'
+
+  /media/shows/{id}:
+    get:
+      tags:
+        - TV Shows
+      description: 'Gets information about a TV show'
+      responses:
+        200:
+          description: 'TV show details'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Series'
+    delete:
+      tags:
+        - TV Shows
+      description: 'Deletes information about a TV show'
+      responses:
+        200:
+          description: 'TV show deleted'
+    parameters:
+      - name: id
+        in: path
+        description: 'TV Show ID'
+        required: true
+        schema:
+          type: string
+
+  /media/animation:
+    get:
+      tags:
+        - Animation
+      description: 'Get a list of animations'
+      responses:
+        200:
+          description: 'Animations list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      tags:
+        - Animation
+      description: 'Add new animation'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAnimation'
+      responses:
+        200:
+          description: 'Animation added'
+
+  /media/animation/{id}:
+    get:
+      tags:
+        - Animation
+      description: 'Gets information about an animation'
+      responses:
+        200:
+          description: 'Animation details'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Movie'
+                  - $ref: '#/components/schemas/Series'
+    delete:
+      tags:
+        - Animation
+      description: 'Deletes information about an animation'
+      responses:
+        200:
+          description: 'Animation deleted'
+    parameters:
+      - name: id
+        in: path
+        description: 'Animation ID'
+        required: true
+        schema:
+          type: string
+
+  /media/anime:
+    get:
+      tags:
+        - Anime
+      description: 'Get a list of anime'
+      responses:
+        200:
+          description: 'Anime list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      tags:
+        - Anime
+      description: 'Add new anime'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAnime'
+      responses:
+        200:
+          description: 'Anime added'
+
+  /media/anime/{id}:
+    get:
+      tags:
+        - Anime
+      description: 'Gets information about an anime'
+      responses:
+        200:
+          description: 'Anime details'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Movie'
+                  - $ref: '#/components/schemas/Series'
+    delete:
+      tags:
+        - Anime
+      description: 'Deletes information about an anime'
+      responses:
+        200:
+          description: 'Anime deleted'
+    parameters:
+      - name: id
+        in: path
+        description: 'Anime ID'
+        required: true
+        schema:
+          type: string
+
+  /media/music:
+    get:
+      tags:
+        - Music
+      description: 'Get a list of music'
+      responses:
+        200:
+          description: 'Music list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+
+  /media/books:
+    get:
+      tags:
+        - Books
+      description: 'Get a list of books'
+      responses:
+        200:
+          description: 'Books list'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+
+components:
+  schemas:
+    User:
+      type: 'object'
+      required:
+        - 'name'
+        - 'surname'
+        - 'age'
+      properties:
+        name:
+          type: string
+          minLength: 1
+          default: 'James'
+        surname:
+          type: string
+          minLength: 1
+          default: 'Smith'
+        age:
+          type: integer
+          minimum: 1
+          default: 21
+    Franchise:
+      type: 'object'
+      required:
+        - 'title'
+      properties:
+        id:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+          default: 'Avatar'
+        description:
+          type: string
+        collection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Media'
+    Media:
+      type: 'object'
+      required:
+        - 'title'
+      properties:
+        id:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+          default: 'Avatar'
+        year:
+          type: string
+          default: '2009'
+        type:
+          type: string
+          default: 'Movie'
+          enum:
+            - 'Movie'
+            - 'TV Show'
+            - 'Animation Movie'
+            - 'Animated Series'
+            - 'Anime'
+            - 'Anime (Movie)'
+            - 'Music'
+            - 'Book'
+            - 'Comics'
+            - 'Manga'
+    Movie:
+      type: 'object'
+      required:
+        - 'title'
+        - 'year'
+      properties:
+        id:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+          default: 'Avatar'
+        year:
+          type: integer
+          minimum: 1900
+          default: 2009
+        genres:
+          type: array
+          items:
+            type: string
+        runtime:
+          type: string
+          default: '2h 42 minutes'
+        studio:
+          type: string
+        director:
+          type: string
+        description:
+          type: string
+        links:
+          type: array
+          items:
+            type: string
+    Series:
+      type: 'object'
+      required:
+        - 'title'
+      properties:
+        id:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+          default: 'Friends'
+        time_period:
+          type: string
+          default: '1994-2004'
+        genres:
+          type: array
+          items:
+            type: string
+        seasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Season'
+        description:
+          type: string
+        links:
+          type: array
+          items:
+            type: string
+    Season:
+      type: 'object'
+      required:
+        - 'title'
+      properties:
+        id:
+          type: string
+          minLength: 1
+        title:
+          type: string
+          minLength: 1
+          default: 'Friends (season 1)'
+        periodic_number:
+          type: integer
+          default: 1
+        time_from:
+          type: string
+          default: 'September 1994'
+        time_to:
+          type: string
+          default: 'May 1995'
+        studio:
+          type: string
+        episode_count:
+          type: integer
+          default: 24
+        average_episode_runtime:
+          type: integer
+          description: Average episode runtime in minutes
+          default: 22
+    NewMovie:
+      type: 'object'
+      required:
+        - 'title'
+        - 'year'
+      properties:
+        title:
+          type: string
+          minLength: 1
+          default: 'Avatar'
+        year:
+          type: integer
+          minimum: 1900
+          default: 2009
+    NewShow:
+      type: 'object'
+      required:
+        - 'title'
+      properties:
+        title:
+          type: string
+          minLength: 1
+          default: 'Friends'
+    NewAnimation:
+      type: 'object'
+      required:
+        - 'title'
+        - 'type'
+      properties:
+        title:
+          type: string
+          minLength: 1
+          default: 'Toy Story'
+        type:
+          type: string
+          minLength: 1
+          default: 'Animation Movie'
+    NewAnime:
+      type: 'object'
+      required:
+        - 'title'
+        - 'type'
+      properties:
+        title:
+          type: string
+          minLength: 1
+          default: 'Toy Story'
+        type:
+          type: string
+          minLength: 1
+          default: 'Animation Movie'
