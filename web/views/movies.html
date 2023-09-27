@@ -8,12 +8,30 @@
             box-sizing: border-box;
         }
 
+        /* The sidebar menu */
+        .menu-sidebar {
+            height: 100%; /* Full-height: remove this if you want "auto" height */
+            width: 160px; /* Set the width of the sidebar */
+            position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+            z-index: 1; /* Stay on top */
+            top: 0; /* Stay at the top */
+            left: 0;
+            background-color: #96d2c2;
+            overflow-x: hidden; /* Disable horizontal scroll */
+            padding-top: 20px;
+        }
+
+        /* Style page content */
+        .main {
+            margin-left: 160px; /* Same as the width of the sidebar */
+            padding: 0 10px;
+        }
+
         .add-form-popup {
-            margin: 10px;
-            display: none;
             max-width: 500px;
             border: 3px solid #f1f1f1;
         }
+
         .add-form-container {
             padding: 10px;
         }
@@ -21,37 +39,163 @@
         .add-form-container input {
             width: 100%;
         }
+
+        .item-table {
+            width: 50%;
+            border: 1px solid black;
+        }
+
+        .item-table tr, th, td {
+            height: 300px;
+            border: 1px solid black;
+        }
     </style>
 </head>
 <body>
-<div>
-    <button class="add-button" onclick="openForm()">Add</button>
-    <div class="add-form-popup" id="add-form">
-        <form action="http://localhost:3000/api/movies/" method="post" class="add-form-container">
-            <h2>Add Movie</h2>
 
-            <label for="title">Title</label>
-            <input type="text" name="title" id="title" required>
-            <label for="year">Year</label>
-            <input type="number" min="1900" max="2099" value="1900" name="year" id="year">
-
-            <button type="submit" class="send-button">Add</button>
-            <button type="button" class="cancel-button" onclick="closeForm()">Cancel</button>
-        </form>
-    </div>
+<div class="menu-sidebar">
+    <p>Username</p>
 </div>
-<br>
-<a href="/">
-    <button class="back-button">Back</button>
-</a>
+<div class="main">
+    <div>
+        <button class="add-button" onclick="openForm()">Add</button>
+        <dialog class="add-form-popup" id="add-form-dialog">
+            <form action="/media/" method="post" id="add-media-form" class="add-form-container">
+                <h2>Add Movie</h2>
+
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title" required>
+                <label for="year">Year</label>
+                <input type="number" min="1900" max="2099" value="1900" name="year" id="year">
+
+                <button type="submit" class="send-button">Add</button>
+                <button type="button" class="cancel-button" onclick="closeForm()">Cancel</button>
+            </form>
+        </dialog>
+        <a href="/">
+            <button class="back-button">Back</button>
+        </a>
+    </div>
+
+    <table class="item-table" id="media-table">
+        <tr>
+            <th>Title</th>
+            <th>Year</th>
+        </tr>
+    </table>
+</div>
 
 <script>
     function openForm() {
-        document.getElementById("add-form").style.display="block"
+        document.getElementById("add-form-dialog").showModal()
     }
+
     function closeForm() {
-        document.getElementById("add-form").style.display="none"
+        document.getElementById("add-form-dialog").close()
     }
+
+    let sampleForm = document.getElementById("add-media-form");
+    sampleForm.addEventListener("submit", async (e) => {
+            //Prevent browser default behavior
+            e.preventDefault();
+
+            //Get the entire form fields
+            let form = e.currentTarget;
+            let formEntries = getFormEntries(form)
+
+            //Get URL for api endpoint
+            let url = form.action;
+
+            try {
+                //Call the `postFormFieldsJson()` function
+                await postFormFieldsAsJson({url, formEntries});
+
+                document.getElementById("add-form-dialog").close()
+            } catch (error) {
+                // Handle the error here.
+                console.error(`Error has occurred ${error}`);
+            }
+        }
+    );
+
+    function getFormEntries(form) {
+        const inputMap = new Map();
+        let elements = form.elements;
+
+        for (let i = 0; i < elements.length; i++) {
+            switch (elements[i].type) {
+                case 'text':
+                    inputMap.set(elements[i].id, elements[i].value);
+                    break;
+                case 'number':
+                    inputMap.set(elements[i].id, Number(elements[i].value));
+                    break;
+            }
+        }
+
+        return inputMap
+    }
+
+    async function postFormFieldsAsJson({url, formEntries}) {
+        //Create an object from the form entries
+        let formDataObject = Object.fromEntries(formEntries);
+        // Format the plain form data as JSON
+        let formDataJsonString = JSON.stringify(formDataObject);
+
+        //Set the fetch options (headers, body)
+        let fetchOptions = {
+            //HTTP method set to POST.
+            method: "POST",
+            //Set the headers that specify you're sending a JSON body request and accepting JSON response
+            headers: {
+                "Content-Type": "application/json"
+            },
+            // POST request body as JSON string.
+            body: formDataJsonString,
+        };
+
+        //Get the response body as JSON.
+        //If the response was not OK, throw an error.
+        let res = await fetch(url, fetchOptions);
+        console.log(res)
+
+        //If the response is not ok throw an error (for debugging)
+        if (!res.ok) {
+            let error = await res.text();
+            throw new Error(error);
+        }
+        //If the response was OK, return the response body.
+        return res;
+    }
+
+
+    document.onload = loadMediaList()
+
+    function loadMediaList() {
+        const items1 = [
+            {title: "Some", year: 2001},
+            {title: "Some 2", year: 1998},
+            {title: "Avatar", year: 2012},
+            {title: "Thor", year: 1993},
+            {title: "Matrix", year: 1992},
+            {title: "Bill", year: 1991},
+            {title: "Kill", year: 1990},
+        ];
+
+        loadTableData(items1);
+    }
+
+    function loadTableData(items) {
+        const table = document.getElementById("media-table");
+        items.forEach(item => {
+            let row = table.insertRow();
+            let title = row.insertCell(0);
+            title.innerHTML = item.title;
+            let year = row.insertCell(1);
+            year.innerHTML = item.year;
+        });
+    }
+
 </script>
 
 </body>
